@@ -1,21 +1,23 @@
 const fs = require('fs');
+const Papa = require('papaparse');
 
 // Função para escrever no arquivo CSV
 function escreverCSV(nomeArquivo, dados) {
-    // Adicionar cabeçalhos
-    const cabecalhos = ['Coluna1', 'Coluna2'];
-    
-    // Converter o array de dados em formato CSV (incluindo cabeçalhos)
-    const linhas = [cabecalhos, ...dados].map(linha => linha.join(',')).join('\n');
-    
+    // Converter os dados para formato CSV usando o PapaParse
+    const csv = Papa.unparse(dados, {
+        header: true, // Inclui cabeçalhos automaticamente
+        columns: ['Coluna1', 'Coluna2']
+    });
+
     // Escrever no arquivo
-    fs.writeFileSync(nomeArquivo, linhas, 'utf8');
+    fs.writeFileSync(nomeArquivo, csv, 'utf8');
 }
 
 // Exemplo de uso
 const dados = [
-    [1, 'Dado1'],
-    [2, 'Dado2']
+    { Coluna1: 1, Coluna2: 'Dado1' },
+    { Coluna1: 2, Coluna2: 'Dado2' }
 ];
 
 escreverCSV('dados.csv', dados);
+
