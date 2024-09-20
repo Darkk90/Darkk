@@ -1,0 +1,18 @@
+version: '3'  # Versão do Docker Compose
+
+services:  
+  db:    # Serviço para o banco de dados PostgreSQL
+    image: postgres  # Usa a imagem oficial do PostgreSQL
+    environment:     # Define as variáveis de ambiente para o banco
+      POSTGRES_DB: meu_banco
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha
+    ports:
+      - "5432:5432"  # Mapeia a porta do PostgreSQL no host para a porta no container
+
+  app:   # Serviço para a aplicação Flask
+    build: .        # Constrói a imagem da aplicação a partir do Dockerfile
+    ports:
+      - "5000:5000" # Mapeia a porta 5000 do container para a porta 5000 do host
+    depends_on:     # Garante que o banco de dados esteja pronto antes da aplicação subir
+      - db
