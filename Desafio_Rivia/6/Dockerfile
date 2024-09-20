@@ -1,3 +1,4 @@
-FROM python:3.9-slim  
-COPY app.py /app.py   
-CMD ["python", "app.py"] 
+FROM node:14-slim
+COPY app.js /app.js
+CMD ["node", "app.js"]
+
