@@ -1,9 +1,18 @@
-FROM python:3.9-slim  
+# Imagem base
+FROM node:14-slim
 
-WORKDIR /app           
-COPY requirements.txt requirements.txt  
-RUN pip install -r requirements.txt     
+# Definir diretório de trabalho
+WORKDIR /app
 
-COPY . .               
+# Copiar package.json e instalar dependências
+COPY package*.json ./
+RUN npm install
 
-CMD ["python", "app.py"]  
+# Copiar o restante dos arquivos da aplicação
+COPY . .
+
+# Expor a porta da API
+EXPOSE 3000
+
+# Comando para rodar a aplicação
+CMD ["node", "app.js"]
