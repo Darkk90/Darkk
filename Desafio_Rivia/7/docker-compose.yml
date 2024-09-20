@@ -1,18 +1,22 @@
-version: '3'  # Versão do Docker Compose
-
-services:  
-  db:    # Serviço para o banco de dados PostgreSQL
-    image: postgres  # Usa a imagem oficial do PostgreSQL
-    environment:     # Define as variáveis de ambiente para o banco
-      POSTGRES_DB: meu_banco
-      POSTGRES_USER: usuario
-      POSTGRES_PASSWORD: senha
+version: '3'
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongodb
     ports:
-      - "5432:5432"  # Mapeia a porta do PostgreSQL no host para a porta no container
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
 
-  app:   # Serviço para a aplicação Flask
-    build: .        # Constrói a imagem da aplicação a partir do Dockerfile
+  api:
+    build: .
+    container_name: node_api
     ports:
-      - "5000:5000" # Mapeia a porta 5000 do container para a porta 5000 do host
-    depends_on:     # Garante que o banco de dados esteja pronto antes da aplicação subir
-      - db
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/docker_node_api
+
+volumes:
+  mongo-data:
