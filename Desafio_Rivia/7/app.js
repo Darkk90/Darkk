@@ -1,29 +1,37 @@
-from flask import Flask
-import psycopg2
+const express = require('express');
+const mongoose = require('mongoose');
 
-app = Flask(__name__)
+const app = express();
+app.use(express.json()); // Middleware para lidar com JSON
 
-def conectar_db():
-    # Conecta ao banco de dados PostgreSQL que está rodando em um container separado.
-    conn = psycopg2.connect(
-        dbname="meu_banco",        # Nome do banco de dados
-        user="usuario",            # Usuário do banco de dados
-        password="senha",          # Senha do usuário
-        host="db",                 # Host 'db' refere-se ao nome do serviço no docker-compose
-        port="5432"                # Porta do PostgreSQL
-    )
-    return conn
+// Conectar ao MongoDB
+mongoose.connect('mongodb://mongo:27017/docker_node_api', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
-@app.route('/')
-def home():
-    # Executa uma query simples para pegar a hora atual do banco
-    conn = conectar_db()
-    cursor = conn.cursor()
-    cursor.execute('SELECT NOW()')  # Consulta para pegar a hora atual
-    resultado = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return f"Hora atual no banco: {resultado[0]}"
+// Definir um modelo (schema) para o banco de dados
+const Item = mongoose.model('Item', { name: String });
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+// Rota de teste
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+
+// Rota para adicionar um item
+app.post('/items', async (req, res) => {
+    const item = new Item({ name: req.body.name });
+    await item.save();
+    res.send(item);
+});
+
+// Rota para listar todos os itens
+app.get('/items', async (req, res) => {
+    const items = await Item.find();
+    res.send(items);
+});
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`App rodando em http://localhost:${port}`);
+});
